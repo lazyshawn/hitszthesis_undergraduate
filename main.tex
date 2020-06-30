@@ -1,0 +1,61 @@
+% -*- Coding: UTF-8 -*-
+% Project： hitszthesis_undergraduate
+%
+% Author: Shawn
+%
+
+% 导言区设置
+\input{preamble}  
+
+
+\begin{document}
+  % ===== Cover | 封面 =====
+  \maketitle
+
+
+  % ===== Front | 书前部分 =====
+  \frontmatter
+  % --- Abstract / 摘要 ---
+  \input{front/abstract}
+
+  % --- Contents / 目录 ----
+  \tableofcontents
+
+
+  % ===== Main | 正文部分 =====
+  \mainmatter
+  % --- Main body / 正文 ---
+  % \input{contents/denotation}      % 物理量名称及符号表
+  \input{main/introduction}    % 绪论
+  \input{main/conclusion}      % 结论
+
+
+  % --- Reference / 参考文献 ---
+  %\input{refs/ref}    % 手动管理的参考文献
+  \nocite{ref10, ref12}
+  \bibliography{refs/reference}
+
+  % --- Authorization / 原创性声明 ---
+  \input{main/authorization}
+
+  % --- Acknowledgment / 致谢 ---
+  \input{main/acknowledgment}
+
+
+  % ===== Appendix | 附录 =====
+  \appendix
+  % \input{appendices/appendix-01}
+  % \input{appendices/appendix-02}
+  \includepdf[pages={1,2}]{appendices/article.pdf}
+
+
+  % ===== Back | 书后部分 =====
+  % \backmatter
+\end{document}
+
+!!!!! ------ Common commands: --------!!!!!
+\syntaxonly		% 只检查语法
+\includeonly{sections/section-01,appendixes/appendix-01}	% Only coding these sections
+
+!!!!! ------- Note: ------- !!!!!
+
