@@ -42,7 +42,7 @@
 
 
 %===========================================================================%
-%->> Declare Options
+%->> LoadClass
 %===========================================================================%
 \LoadClass[a4paper,openany,UTF8,zihao=-4,scheme=plain]{ctexbook}
 \@ifclasslater{ctexbook}{2017/01/01}{}{%
