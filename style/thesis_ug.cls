@@ -37,6 +37,9 @@
   \PassOptionsToClass{\CurrentOption}{ctexbook}%
 }
 
+%----- Handle warning of fandol fonts
+\PassOptionsToPackage{quiet}{xeCJK}
+
 %----- Terminates all options processing
 \ProcessOptions\relax%
 
@@ -78,6 +81,10 @@
 \RequirePackage{calc}       % 算术宏包
 \RequirePackage{pdfpages}   % 插入PDF页面
 \RequirePackage{style/gbt7714}  % 参考文献标准: GB/T 7714 (包含natbib宏包)
+% ----- Font Warning
+\RequirePackage[OT1]{fontenc}
+\RequirePackage{fontspec}
+\RequirePackage{xpatch}
 
 
 %===========================================================================%
@@ -166,10 +173,10 @@
 %===========================================================================%
 % ----- 基础字体
 \setlength\parindent{2em}		% 每行缩进两个汉字
-\setmainfont{Times New Roman}	% 设置字体; 西文默认衬线字体(serif)
+% \setmainfont{Times New Roman}	% 西文默认衬线字体(serif); 使用mathptmx宏包
 %\setmonofont{Courier New}		% 西文默认的等宽字体
 \setsansfont{Arial}				% 西文默认无衬线字体(sans serif)
-\setCJKfamilyfont{kai}[AutoFakeBold]{simkai.ttf}
+\setCJKfamilyfont{kai}[AutoFakeBold]{KaiTi}
 \newcommand*{\kai}{\CJKfamily{kai}}
 \setCJKfamilyfont{song}[AutoFakeBold]{SimSun}
 \newcommand*{\song}{\CJKfamily{song}}
@@ -191,6 +198,30 @@
 %\newcommand{\hitsz@glue}{%
 %    \renewcommand{\CJKglue}{\hskip 1em plus 0.08\baselineskip}
 %    }
+
+% ----- 字号设置 -----
+\def\hitsz@def@fontsize#1#2{%
+  \expandafter\newcommand\csname #1\endcsname[1][1.3]{%
+    \fontsize{#2}{##1\dimexpr #2}\selectfont}}
+\hitsz@def@fontsize{dachu}{58bp}
+\hitsz@def@fontsize{chuhao}{42bp}
+\hitsz@def@fontsize{xiaochu}{36bp}
+\hitsz@def@fontsize{yihao}{26bp}
+\hitsz@def@fontsize{xiaoyi}{24bp}
+\hitsz@def@fontsize{erhao}{22bp}
+\hitsz@def@fontsize{xiaoer}{18bp}
+\hitsz@def@fontsize{sanhao}{16bp}
+\hitsz@def@fontsize{xiaosan}{15bp}
+\hitsz@def@fontsize{sihao}{14bp}
+\hitsz@def@fontsize{banxiaosi}{13bp}
+\hitsz@def@fontsize{xiaosi}{12bp}
+\hitsz@def@fontsize{dawu}{11bp}
+\hitsz@def@fontsize{wuhao}{10.5bp}
+\hitsz@def@fontsize{xiaowu}{9bp}
+\hitsz@def@fontsize{liuhao}{7.5bp}
+\hitsz@def@fontsize{xiaoliu}{6.5bp}
+\hitsz@def@fontsize{qihao}{5.5bp}
+\hitsz@def@fontsize{bahao}{5bp}
 
 
 %===========================================================================%
@@ -433,11 +464,11 @@
 }
 
 \def\@pnumwidth{1.55em}  % 页码宽度
-\def\@tocrmarg{\@pnumwidth}
+\def\@tocrmarg{2.55em}  % 标题行左缩进宽度
 \def\@dotsep{0.3}
 
 \renewcommand*\l@chapter[2]{%
-  \ifnum \c@tocdepth >\m@ne
+  \ifnum \c@tocdepth > \m@ne \relax
     \addpenalty{-\@highpenalty}%
     %\vskip 1em \@plus\p@
     \setlength\@tempdima{4em} % 序号盒子宽度 (第n章)
@@ -479,8 +510,8 @@
 
 % 使用style/gbt7714宏包可默认选择unsrt文献格式
 % \bibliographystyle{unsrt}
-\renewenvironment{thebibliography}[1]
-  {\chapter*{\refname}%
+\renewenvironment{thebibliography}[1]{
+  \chapter*{\refname}%
   \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
 
   \normalsize
@@ -666,6 +697,13 @@
   tabsize=3,
 }
 
+\lstdefinestyle{latex}{
+  language=tex,
+  numbers=left,
+  frame=single,
+  numberstyle=\small,
+}
+
 
 
 %===========================================================================%
@@ -673,18 +711,26 @@
 %===========================================================================%
 % ----- hyperref
 \hypersetup{%
-    CJKbookmarks=true,
-    linktoc=all,
-    bookmarksnumbered=true,
-    bookmarksopen=true,
-    bookmarksopenlevel=3,
-    pdfcreator={XeLaTeX with hitszthesis class},
-    breaklinks=true,
-    colorlinks=false,
-    plainpages=false,
-    pdfstartview=FitH,
-    pdfborder={0 0 0}
-    }
+  CJKbookmarks=true,
+  linktoc=all,
+  bookmarksnumbered=true,
+  bookmarksopen=true,
+  bookmarksopenlevel=3,
+  pdfcreator={XeLaTeX with hitszthesis class},
+  breaklinks=true,
+  colorlinks=false,
+  plainpages=false,
+  pdfstartview=FitH,
+  pdfborder={0 0 0}
+}
+
+% ----- enumitem
+% 列表设置
+% \setlist[enumerate,1]{label=(\arabic*).,font=\normalsize,
+\setlength{\parsep}{0ex}%段落间距
+\setlength{\topsep}{1ex}%列表到上下文的垂直距离
+\setlength{\itemsep}{0ex}%条目间距
+
 
 \endinput
 

@@ -1,27 +1,175 @@
+%! TEX root = ../main.tex 
+%! TEX program = xelatex
+
 \chapter{排版格式的定义}
 
 \section{版面设计}
+版面就是书刊每一页的整面，由版心、页眉、页脚、边注以及四周空白组成，
+他们被成为版面元素\cite[139]{man}。
 
 
 \section{论文分区}
+一篇论文的结构划分和书籍类似，一般分为书前、正文、附录和书后部分。
+这些结构的主要区别在于章节和页码的编号方式。
+\begin{itemize}
+  \item frontmatter:\ 关闭章节序号，页码使用罗马数字；
+  \item mainmatter:\ 开启章节序号计数，重置页码，页码使用阿拉伯数字；
+  \item appendix:\ 重置章节序号计数， 章节序号使用字母，对页码没有影响；
+  \item backmatter:\ 关闭章节序号，对页码没有影响。
+\end{itemize}
 
 
 \section{字体声明}
+在Linux下使用\LaTeX 时要先确保已经安装了需要的字体，
+因为Linux一般没有自带常用的中英文字体。
+
+使用下面的命令可以定义新的中文字体，
+添加中文字体需要先加载系统中的字体，再通过
+\begin{lstlisting}[style=Latex]
+  \setCJKfamilyfont{#1}[Opt]{#2}
+  \newcommand*{\kai}{\CJKfamily{kai}}
+\end{lstlisting}
+其中第一条命令将系统中的\#2字体（如simkai.ttf）定义为中文字体\#1；
+使用$\backslash$setCJKfamilyfont命令可以修改文章字体，
+第二条命令只是简化这一字体命令。
 
 
 \section{封面排版}
+封面的排版比较复杂，如果觉得麻烦可以直接在Word中排版好，
+最后导出PDF文件并与\LaTeX 导出的PDF合成即可。
+当然，直接用\LaTeX 也是可行的。
+
+在排版封面时主要用到的几个命令是
+$\backslash$parbox、$\backslash$makebox、$\backslash$uline；
+主要用到的环境有：
+tabular、center、minipage以及浮动体环境。
+组合使用这些命令和环境可以分别排版封面中的各个子区域，
+最后使用垂直间距命令$\backslash$vspace调整各子区域之间的相对位置。
 
 
 \section{页眉页脚}
+页眉页脚的设置需要用到fancy宏包。
+下面是定义正文部分页眉页脚格式的代码。
+\begin{lstlisting}[style=latex]
+  \fancypagestyle{fancy@main}{\fancyhf{}%
+    \fancyfoot[C]{\zihao{-5} -~\thepage~-}
+    \fancyhead[C]{\yemei \hitsz@info@school \hitsz@token@shenzhen \hitsz@info@thesis}
+    \renewcommand{\headrule}{%
+    \hrule width\headwidth height2.276pt \vspace{1pt}\hrule width\headwidth}
+    \setlength{\headheight}{15pt}
+  }
+\end{lstlisting}
+其中，第一行定义了名为fancy@main的页眉格式；
+第二行和第三行分别设置了页脚、页眉的内容和字体；
+四至六行用于生成双页眉线（亦称文武线）。
 
 
 \section{章节标题}
+使用$\backslash$setcounter\{secnumdepth\}\{3\}命令可以设置正文中标题的层次深度。
+BOOK文类中part深度为0，chapter深度为1，section等标题的深度以此类推。
+这一设置可以用来取消标题编号，当secnumdepth被设为-1时，
+所有标题将不会编号（目录中也不会编号），
+注意这只是不显示编号，并不会影响后续章节的序号。
+在需要编号的章节中重新赋值secnumdepth即可恢复编号。
 
+使用$\backslash$ctexset命令可以设置各级标题的格式，
+其赋值方式与json文件类似，可定义内容参见参考文献\cite[193]{man}。
 
-\section{摘要排版}
+\begin{lstlisting}[style=latex]
+\ctexset{%
+  chapter={
+    name={第,章},
+    afterindent=true,
+    % 文类book将每一新章另起一页，该页的默认版式为plain
+    pagestyle={fancy@main},
+    beforeskip={18.74658bp},
+    afterskip={24.74658bp},
+    format={\centering\heiti\zihao{-2}},
+    nameformat=\bfseries,
+    titleformat=\bfseries,
+  },
+}
+\end{lstlisting}
 
 
 \section{目录格式修改}
+目录格式修改可以直接使用宏包，也可以重定义$\backslash$tableofcontents命令。
+book文类中对章节目录命令的定义如下：
+
+\begin{lstlisting}[style=latex]
+% --- 以章节格式添加目录
+\renewcommand\tableofcontents{%
+  \if@openright\cleardoublepage\else\clearpage\fi
+  \phantomsection
+  \chapter*{\contentsname}
+  \normalsize\@starttoc{toc}
+}
+
+% --- 目录条目格式的设置
+\def\@pnumwidth{1.55em}  % 页码宽度
+\def\@tocrmarg{2.55em}   % 标题行左缩进宽度
+\def\@dotsep{0.3}
+% 目录中章节的层次深度
+\setcounter{tocdepth}{2}
+\end{lstlisting}
+首先通过重定义$\backslash$tableofcontents命令将目录以章节的格式加入目录条目；
+三条长度命令分别
+定义预留页码宽度即为排印页码而预留的空白宽度$\backslash$@pnumwidth为1.55em；
+定义左缩进宽度$\backslash$@tocrmarg为2.55em；
+定义指引线中相邻两圆点之间的距离$\backslash$@dotsep为4.5，默认单位为mu。
+
+\begin{lstlisting}[style=latex]
+% 目录中的章标题格式
+\renewcommand*\l@chapter[2]{%
+  \ifnum \c@tocdepth >\m@ne
+    \addpenalty{-\@highpenalty}%
+    % \vskip 1em \@plus\p@
+    \setlength\@tempdima{4em} % 序号盒子宽度 (第n章)
+\end{lstlisting}
+如果设定的目录层度大于$\backslash$m@ne(-1)，
+则可以在章节条目前换页，但并不鼓励这么做。
+在本级条目前添加约2.25em的垂直空白，以与前一条目分隔。
+设置序号盒子的宽度，如"第n章"所占的宽度。
+
+\begin{lstlisting}[style=latex]
+    \begingroup
+      \parindent \z@ \rightskip \@pnumwidth
+      \parfillskip -\@pnumwidth
+      \leavevmode %\bfseries
+      \advance\leftskip\@tempdima
+      \hskip -\leftskip
+\end{lstlisting}
+创建一个组合，段落首行缩进为0，段落右侧向左缩进$\backslash$@pnumwidth，
+段落最后一行文本向右凸出，使页码凸出于条目段落右侧。
+$\backslash$leavevmode 从垂直模式切换到水平模式，即开始一个段落，
+用于排列章标题，后续可设置标题字体格式。
+随后将标题段落整体从左向右缩进$\backslash$tempdima，
+再将段落首行反向缩进相等距离，以使得章节标题首行与版心左侧对齐，
+使除章节序号外的标题段落的各行文本左对齐。
+
+\begin{lstlisting}[style=latex]
+      \heiti #1 \nobreak\hfil % 章节标题内禁止换行
+      \leaders\hbox{$\m@th\mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+      \nobreak\hb@xt@\@pnumwidth{\hss #2}\par
+      \penalty\@highpenalty
+    \endgroup
+  \fi}
+\end{lstlisting}
+\#1参数代表章标题内容，\#2代表章标题页的页码。
+先设置章标题不允许换行，字体设为黑体。
+添加一个水平盒子，以$\backslash$@dotsep为间隔排满指引符。
+设置标题末尾与页码之间禁止换行，随后将页码放入水平盒子并使其右对齐。
+尽量避免在章节条目之后换页，结束组合。
+
+\begin{lstlisting}[style=latex]
+% 子标题的格式设置
+\renewcommand*\l@section{\@dottedtocline{1}{1em}{1.8em}}
+\renewcommand*\l@subsection{\@dottedtocline{2}{2em}{2.5em}}
+\renewcommand*\l@subsubsection{\@dottedtocline{3}{3\ccwd}{3.1em}}
+\end{lstlisting}
+系统还提供了条目行命令，使用格式为
+$\backslash$@dettedtocline\{层次深度\}\{缩进宽度\}\{序号宽度\}，
+常用于定义格式较简单的节及节以下的条目格式。
 
 
 \section{参考文献格式}
